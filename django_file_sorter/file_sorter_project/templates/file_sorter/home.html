@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}File Sorter - Home{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="main-card p-5 mb-4">
+            <div class="text-center mb-4">
+                <h1>Smart File Sorter</h1>
+                <p class="text-muted">Automatically organize your files into categories</p>
+            </div>
+
+            <form method="post" action="{% url 'sort_files' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="{{ form.folder_path.id_for_label }}" class="form-label">
+                        Folder Path to Sort
+                    </label>
+                    {{ form.folder_path }}
+                    <div class="form-text">{{ form.folder_path.help_text }}</div>
+                    {% if form.folder_path.errors %}
+                        <div class="text-danger">
+                            {% for error in form.folder_path.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        🪄 Sort Files Now
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- File Categories Info -->
+        <div class="main-card p-4 mb-4">
+            <h5>File Categories</h5>
+            <div class="row">
+                <div class="col-md-6">
+                    <p><strong>📸 Images:</strong> jpg, png, gif, webp</p>
+                    <p><strong>📄 Documents:</strong> pdf, docx, txt</p>
+                    <p><strong>🎬 Videos:</strong> mp4, mkv, avi, mov</p>
+                    <p><strong>🎵 Audio:</strong> mp3, wav, flac, aac</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>📦 Archives:</strong> zip, rar, 7z, tar</p>
+                    <p><strong>💻 Code:</strong> py, js, html, css, php</p>
+                    <p><strong>📊 Spreadsheets:</strong> xlsx, csv</p>
+                    <p><strong>📋 Others:</strong> All other types</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Sessions -->
+        {% if recent_sessions %}
+        <div class="main-card p-4">
+            <h5>Recent Sorting Sessions</h5>
+            {% for session in recent_sessions %}
+                <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <div>
+                        <strong>{{ session.folder_path }}</strong><br>
+                        <small class="text-muted">{{ session.created_at }} | {{ session.files_processed }} files</small>
+                    </div>
+                    <div>
+                        <span class="badge bg-{% if session.status == 'completed' %}success{% elif session.status == 'failed' %}danger{% else %}warning{% endif %}">
+                            {{ session.status|capfirst }}
+                        </span>
+                        {% if session.status == 'completed' %}
+                            <a href="{% url 'session_detail' session.id %}" class="btn btn-sm btn-outline-primary ms-2">View</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

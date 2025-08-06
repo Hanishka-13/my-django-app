@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Sorting Results{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="main-card p-4 mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2>Sorting Results</h2>
+                    <p class="text-muted mb-0">{{ session.folder_path }}</p>
+                </div>
+                <div class="text-end">
+                    <h4 class="text-success">✅ {{ total_files }} Files Sorted</h4>
+                    <small class="text-muted">{{ session.completed_at }}</small>
+                </div>
+            </div>
+
+            {% for category, files in files_by_category.items %}
+                <div class="mb-4">
+                    <h5 class="border-bottom pb-2">
+                        {% if category == 'Images' %}📸{% elif category == 'Documents' %}📄{% elif category == 'Videos' %}🎬{% elif category == 'Audio' %}🎵{% elif category == 'Archives' %}📦{% elif category == 'Code' %}💻{% elif category == 'Spreadsheets' %}📊{% else %}📋{% endif %}
+                        {{ category }} ({{ files|length }} files)
+                    </h5>
+                    <div class="row">
+                        {% for file in files %}
+                            <div class="col-md-6 mb-2">
+                                <div class="bg-light p-2 rounded">
+                                    <small>
+                                        <strong>{{ file.original_name }}</strong><br>
+                                        <span class="text-muted">{{ file.file_size|filesizeformat }}</span>
+                                    </small>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                <p>No files were sorted in this session.</p>
+            {% endfor %}
+
+            <div class="text-center mt-4">
+                <a href="{% url 'home' %}" class="btn btn-primary">Sort More Files</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
